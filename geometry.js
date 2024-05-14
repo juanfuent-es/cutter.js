@@ -1,3 +1,4 @@
+const PX_RATIO = window.devicePixelRatio
 import {
     gsap
 } from "gsap"
@@ -42,17 +43,17 @@ export default class HTMLGeometry {
     }
     //svg pos
     get x() {
-        return this.getAttr("x")
+        return this.getAttr("x") * PX_RATIO
     }
     get y() {
-        return this.getAttr("y")
+        return this.getAttr("y") * PX_RATIO
     }
     //size
     get width() {
-        return this.getAttr("width")
+        return this.getAttr("width") * PX_RATIO
     }
     get height() {
-        return this.getAttr("height")
+        return this.getAttr("height") * PX_RATIO
     }
 
     getAttr(_attr) {

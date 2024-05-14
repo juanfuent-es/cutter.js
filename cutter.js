@@ -18,8 +18,7 @@ export default class Cutter {
             y: 0
         }
         //
-        this.dragging = false
-        this.drag = new HTMLGeometry(this.container.querySelector(".drag"))
+        this.drag = false
         this.clip = new HTMLGeometry(this.container.querySelector(".clip"))
         this.ghost = new HTMLGeometry(this.container.querySelector(".ghost"))
         this.img = new HTMLGeometry(this.container.querySelector(".img"))
@@ -40,25 +39,26 @@ export default class Cutter {
     }
 
     events() {
+        this.sensible = this.container.querySelector(".sensible")
         //mouse
-        this.drag.dom_element.addEventListener('mousedown', e => this.onDragDown(e))
+        this.sensible.addEventListener('mousedown', e => this.onDragDown(e))
         document.addEventListener('mousemove', e => this.onDragMove(e))
         document.addEventListener('mouseup', e => this.onDragUp(e))
         // touch
-        this.drag.dom_element.addEventListener('touchstart', e => this.onDragDown(e))
+        this.sensible.addEventListener('touchstart', e => this.onDragDown(e))
         document.addEventListener('touchmove', e => this.onDragMove(e))
         document.addEventListener('touchend', e => this.onDragUp(e))
         //
     }
     //events
     onDragDown(e) {
-        this.dragging = true
+        this.drag = true
         this.container.classList.add("dragging")
     }
 
     onDragMove(e) {
         let point = e.touches ? e.touches[0] : e
-        if (this.dragging) {
+        if (this.drag) {
             let _x = point.clientX - this.clip.left
             let _y = point.clientY - this.clip.top
             this.dragTo(_x, _y)
@@ -66,7 +66,7 @@ export default class Cutter {
     }
 
     onDragUp(e) {
-        this.dragging = false
+        this.drag = false
         this.container.classList.remove("dragging")
     }
 
