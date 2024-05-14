@@ -1,22 +1,48 @@
 <!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cutter.js</title>
-    <meta name='title'                      content='Cutter.js'>
-    <meta name='description'                content='Cutting images with svg masks'>
-    <meta property='og:type'                content='website'>
-    <meta property='og:title'               content='Cutter.js'>
-    <meta property='og:description'         content='Cutting images with svg masks'>
-    <link rel="stylesheet" href="/style.css">
-  </head>
-  <body>
-    <main id="app">
-      
-    </main>
-    <script type="module" src="/main.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cutter.js</title>
+  <meta name='title' content='Cutter.js'>
+  <meta name='description' content='Cutting images with svg masks'>
+  <meta property='og:type' content='website'>
+  <meta property='og:title' content='Cutter.js'>
+  <meta property='og:description' content='Cutting images with svg masks'>
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+  <a href="https://lelab.ink/" target="_blank">
+    <img src="https://lelab.ink/static/img/commons/logo.png" alt="Lelab Logo">
+  </a>
+  <main id="app">
+    <svg width="600px" height="600px">
+      <rect width="600" height="600" fill="#e5e5e5" />
+      <clipPath id="clippath-idx">
+        <rect class="clip" x="100" y="100" width="400" height="400" />
+      </clipPath>
+      <image clip-path="url(#clippath-idx)" width="900" height="600" xlink:href="https://loremflickr.com/900/600" x="0"
+        y="0" />
+      <g fill="#000000" class="drag">
+        <circle cx="50" cy="50" r="50" fill="rgba(255,255,255,.35)" />
+        <polygon
+          points="48.7 18.9 48.7 45.6 51.8 45.6 51.8 18.9 60.2 27.2 62.4 25 50.3 12.9 38.2 25 40.3 27.2 48.7 18.9" />
+        <polygon
+          points="45.6 51.8 45.6 48.7 18.9 48.7 28.3 39.3 26.1 37.1 12.9 50.2 25 62.3 27.3 60.1 18.9 51.8 45.6 51.8" />
+        <polygon
+          points="75.5 38.2 73.3 40.4 81.7 48.7 54.9 48.7 54.9 51.8 81.6 51.8 73.2 60.2 75.5 62.4 87.6 50.2 75.5 38.2" />
+        <polygon
+          points="51.8 81.6 51.8 54.9 48.7 54.9 48.7 81.6 40.3 73.3 38.1 75.5 50.3 87.6 63.4 74.4 61.2 72.2 51.8 81.6" />
+        <path
+          d="M50.2,100.2C22.7,100.2.2,77.8.2,50.2S22.7.2,50.2.2s50,22.4,50,50-22.4,50-50,50ZM50.2,3.2C24.3,3.2,3.2,24.3,3.2,50.2s21.1,47.1,47.1,47.1,47.1-21.1,47.1-47.1S76.2,3.2,50.2,3.2Z" />
+      </g>
+    </svg>
+  </main>
+  <script type="module" src="/main.js"></script>
+</body>
+
 </html>

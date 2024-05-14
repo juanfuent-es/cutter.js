@@ -1,0 +1,51 @@
+:root {
+    --font-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+    --font-family: "basic-sans", var(--font-fallback);
+    --font-title: 'Bree', var(--font-fallback);
+    --light: #e5e5e5;
+    --coral: #f4a0a2;
+    --cloud: #dadbe7;
+    --salmon: #f9c7bb;
+    --petrol: #55859a;
+}
+body {
+	padding: 0;
+	margin: 0;
+	overflow: hidden;
+	background: var(--petrol);
+}
+
+main {
+	width: 600px;
+	height: 600px;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+}
+
+svg {
+	position: relative;
+}
+
+.drag {
+	cursor: all-scroll;
+	z-index: 1;
+	fill: #000;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(250px, 250px);
+}
+
+a {
+	padding: 0 1em;
+	max-width: 120px;
+	width: 50%;
+	display: inline-block;
+	transition: opacity 250ms ease;
+}
+
+img {
+	max-width: 100%;
+}
