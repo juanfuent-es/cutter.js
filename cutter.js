@@ -27,13 +27,7 @@ export default class Cutter {
     }
 
     fitSetup() {
-        let clip_width = this.clip.width
-        let clip_height = this.clip.height
-        //
-        let img_width = this.img.width
-        let img_height = this.img.height
-        //
-        const rect = fitImage(clip_width, clip_height, img_width, img_height)
+        const rect = fitImage(this.clip.width, this.clip.height, this.img.width, this.img.height)
         this.img.to(rect.x, rect.y)
         this.img.resize(rect.width, rect.height)
     }

@@ -30,7 +30,6 @@ export default class HTMLGeometry {
         this.dom_element.setAttribute("width", (_width || this.width))
         this.dom_element.setAttribute("height", (_height || this.height))
     }
-
     get rect() {
         return this.dom_element.getBoundingClientRect()
     }
@@ -43,17 +42,17 @@ export default class HTMLGeometry {
     }
     //svg pos
     get x() {
-        return this.getAttr("x") * PX_RATIO
+        return this.getAttr("x")
     }
     get y() {
-        return this.getAttr("y") * PX_RATIO
+        return this.getAttr("y")
     }
     //size
     get width() {
-        return this.getAttr("width") * PX_RATIO
+        return this.getAttr("width")
     }
     get height() {
-        return this.getAttr("height") * PX_RATIO
+        return this.getAttr("height")
     }
 
     getAttr(_attr) {
