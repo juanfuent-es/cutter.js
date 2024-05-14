@@ -57,8 +57,7 @@ export default class Cutter {
     }
 
     onDragMove(e) {
-        console.log(e)
-        let point = e.touches[0] ? e.touches[0] : e
+        let point = e.touches ? e.touches[0] : e
         if (this.dragging) {
             let _x = point.clientX - this.clip.left
             let _y = point.clientY - this.clip.top
