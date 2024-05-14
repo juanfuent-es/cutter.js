@@ -97,7 +97,7 @@ class Cutter {
         this.cutter(cropTo)
     }
 
-    cutter(_offset) {
+    cutter(_to) {
         let min_x = this.img.width - this.clip.width - this.clip.x
         let min_y = this.img.height - this.clip.height - this.clip.y
         // console.log()
@@ -106,8 +106,8 @@ class Cutter {
             ease: "power0.linear",
             duration: .15,
             overwrite: true,
-            x: Math.map(_offset.x, 0, 100, this.clip.x, -min_x),
-            y: Math.map(_offset.y, 0, 100, this.clip.y, -min_y),
+            x: Math.map(_to.x, 0, 100, this.clip.x, -min_x),
+            y: Math.map(_to.y, 0, 100, this.clip.y, -min_y),
             onUpdate: () => {
                 this.img.dom_element.setAttribute("x", this.offset.x)
                 this.img.dom_element.setAttribute("y", this.offset.y)
