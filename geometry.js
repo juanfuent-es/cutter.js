@@ -1,7 +1,29 @@
+import {
+    gsap
+} from "gsap"
 export default class HTMLGeometry {
     constructor(dom_element) {
         this.dom_element = dom_element
+        this.pos = {
+            x: 0,
+            y: 0
+        }
     }
+
+    to(_x = null, _y = null) {
+        gsap.to(this.pos, {
+            ease: "power0.linear",
+            duration: .1,
+            overwrite: true,
+            x: (_x || this.pos.x),
+            y: (_y || this.pos.y),
+            onUpdate: () => {
+                this.dom_element.setAttribute("x", this.pos.x)
+                this.dom_element.setAttribute("y", this.pos.y)
+            }
+        })
+    }
+
     get rect() {
         return this.dom_element.getBoundingClientRect()
     }

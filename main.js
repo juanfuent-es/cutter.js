@@ -103,19 +103,11 @@ class Cutter {
         let min_y = this.img.height - this.clip.height - this.clip.y
         // console.log()
         // 
-        gsap.to(this.offset, {
-            ease: "power0.linear",
-            duration: .15,
-            overwrite: true,
-            x: Math.map(_to.x, 0, 100, this.clip.x, -min_x),
-            y: Math.map(_to.y, 0, 100, this.clip.y, -min_y),
-            onUpdate: () => {
-                this.img.dom_element.setAttribute("x", this.offset.x)
-                this.img.dom_element.setAttribute("y", this.offset.y)
-                this.ghost.dom_element.setAttribute("x", this.offset.x)
-                this.ghost.dom_element.setAttribute("y", this.offset.y)
-            }
-        })
+        const _x = Math.map(_to.x, 0, 100, this.clip.x, -min_x)
+        const _y = Math.map(_to.y, 0, 100, this.clip.y, -min_y)
+
+        this.img.to(_x, _y)
+        this.ghost.to(_x, _y)
     }
 
     updateOffsets(_x = 0, _y = 0) {
