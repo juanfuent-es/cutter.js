@@ -30,11 +30,11 @@ class Cutter {
     }
 
     fitSetup() {
-        let clip_width = this.clip.dom_element.getAttribute("width")
-        let clip_height = this.clip.dom_element.getAttribute("height")
+        let clip_width = this.clip.width
+        let clip_height = this.clip.height
         //
-        let img_width = this.img.dom_element.getAttribute("width")
-        let img_height = this.img.dom_element.getAttribute("height")
+        let img_width = this.img.width
+        let img_height = this.img.height
         //
         const rect = fitImage(clip_width, clip_height, img_width, img_height)
         this.img.dom_element.setAttribute("x", rect.x)
@@ -93,28 +93,35 @@ class Cutter {
     }
 
     dragTo(_x, _y) {
-        this.offset = this.updateOffsets(_x, _y)
-        console.clear()
-        console.log("offset", this.offset)
-        // this.cutter(this.offset)
+        let cropTo = this.updateOffsets(_x, _y)
+        this.cutter(cropTo)
     }
 
     cutter(_offset) {
-        let max_offset = Math.abs((this.img.dom_element.getAttribute("width") - this.clip.dom_element.getAttribute("width")) / 2)
-        let cut_x = Math.map(_offset.x, 0, 100, max_offset, -max_offset)
-        console.log(max_offset, cut_x)
-        //
-        this.img.dom_element.setAttribute("x", cut_x)
-        // this.img.dom_element.setAttribute("y", _offset.y)
+        let min_x = this.img.width - this.clip.width - this.clip.x
+        let min_y = this.img.height - this.clip.height - this.clip.y
+        // console.log()
+        // 
+        gsap.to(this.offset, {
+            ease: "power0.linear",
+            duration: .15,
+            overwrite: true,
+            x: Math.map(_offset.x, 0, 100, this.clip.x, -min_x),
+            y: Math.map(_offset.y, 0, 100, this.clip.y, -min_y),
+            onUpdate: () => {
+                this.img.dom_element.setAttribute("x", this.offset.x)
+                this.img.dom_element.setAttribute("y", this.offset.y)
+            }
+        })
     }
 
     updateOffsets(_x = 0, _y = 0) {
-        let _width = this.clip.dom_element.getAttribute("width")
+        let _width = this.clip.width
         let x = (~~(_x * 100) / _width)
         x = Math.max(x, 0)
         x = Math.min(x, 100)
         //
-        let _height = this.clip.dom_element.getAttribute("height")
+        let _height = this.clip.height
         let y = (~~(_y * 100) / _height)
         y = Math.max(y, 0)
         y = Math.min(y, 100)

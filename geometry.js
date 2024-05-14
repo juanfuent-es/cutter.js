@@ -5,16 +5,29 @@ export default class HTMLGeometry {
     get rect() {
         return this.dom_element.getBoundingClientRect()
     }
-    get width() {
-        return this.rect.width
-    }
-    get height() {
-        return this.rect.height
-    }
+    //dom position
     get left() {
         return this.rect.left
     }
     get top() {
         return this.rect.top
+    }
+    //svg pos
+    get x() {
+        return this.getAttr("x")
+    }
+    get y() {
+        return this.getAttr("y")
+    }
+    //size
+    get width() {
+        return this.getAttr("width")
+    }
+    get height() {
+        return this.getAttr("height")
+    }
+
+    getAttr(_attr) {
+        return Number(this.dom_element.getAttribute(_attr))
     }
 }
