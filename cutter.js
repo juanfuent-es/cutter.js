@@ -10,30 +10,23 @@ Math.map = (n, start, stop, start2, stop2) => {
 
 import HTMLGeometry from "./geometry"
 
-export default class Cutter {
+export default class Cutter extends HTMLGeometry {
     constructor(_svg) {
-        this.container = _svg
+        super(_svg)
         this.offset = {
             x: 0,
             y: 0
         }
         //
         this.drag = false
-        this.clip = new HTMLGeometry(this.container.querySelector(".clip"))
-        this.ghost = new HTMLGeometry(this.container.querySelector(".ghost"))
-        this.img = new HTMLGeometry(this.container.querySelector(".img"))
-        //this.fitSetup()
+        this.clip = new HTMLGeometry(this.dom_element.querySelector(".clip"))
+        this.ghost = new HTMLGeometry(this.dom_element.querySelector(".ghost"))
+        this.img = new HTMLGeometry(this.dom_element.querySelector(".img"))
         this.events()
     }
 
-    fitSetup() {
-        const rect = fitImage(this.clip.width, this.clip.height, this.img.width, this.img.height)
-        this.img.to(rect.x, rect.y)
-        this.img.resize(rect.width, rect.height)
-    }
-
     events() {
-        this.sensible = this.container.querySelector(".sensible")
+        this.sensible = this.dom_element.querySelector(".sensible")
         //mouse
         this.sensible.addEventListener('mousedown', e => this.onDragDown(e))
         document.addEventListener('mousemove', e => this.onDragMove(e))
@@ -47,21 +40,21 @@ export default class Cutter {
     //events
     onDragDown(e) {
         this.drag = true
-        this.container.classList.add("dragging")
+        this.dom_element.classList.add("dragging")
     }
 
     onDragMove(e) {
         let point = e.touches ? e.touches[0] : e
         if (this.drag) {
-            let _x = point.clientX - this.clip.left
-            let _y = point.clientY - this.clip.top
+            let _x = point.clientX - this.left - this.clip.x
+            let _y = point.clientY - this.top - this.clip.y
             this.dragTo(_x, _y)
         }
     }
 
     onDragUp(e) {
         this.drag = false
-        this.container.classList.remove("dragging")
+        this.dom_element.classList.remove("dragging")
     }
 
     dragTo(_x, _y) {
@@ -70,10 +63,12 @@ export default class Cutter {
     }
 
     cutter(_to) {
-        let min_x = this.img.width - this.clip.width - this.clip.x
-        let min_y = this.img.height - this.clip.height - this.clip.y
-        const _x = Math.map(_to.x, 0, this.clip.width, this.clip.x, -min_x)
-        const _y = Math.map(_to.y, 0, this.clip.height, this.clip.y, -min_y)
+        let min_x = this.clip.x
+        let min_y = this.clip.y
+        let max_w = (this.img.width - this.clip.width - this.clip.x)
+        let max_h = (this.img.height - this.clip.height - this.clip.y)
+        const _x = Math.map(_to.x, 0, this.clip.width, min_x, -max_w)
+        const _y = Math.map(_to.y, 0, this.clip.height, min_y, -max_h)
         // 
         this.img.to(_x, _y)
         this.ghost.to(_x, _y)

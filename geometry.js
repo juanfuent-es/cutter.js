@@ -49,10 +49,10 @@ export default class HTMLGeometry {
     }
     //size
     get width() {
-        return this.getAttr("width")
+        return (this.getAttr("width") || this.rect.width)
     }
     get height() {
-        return this.getAttr("height")
+        return (this.getAttr("height") || this.rect.height)
     }
 
     getAttr(_attr) {
