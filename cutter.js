@@ -45,9 +45,9 @@ export default class Cutter {
         document.addEventListener('mousemove', e => this.onDragMove(e))
         document.addEventListener('mouseup', e => this.onDragUp(e))
         // touch
-        this.drag.dom_element.addEventListener('touchstart', e => this.onDragDown())
-        document.addEventListener('touchmove', e => this.onDragMove())
-        document.addEventListener('touchend', e => this.onDragUp())
+        this.drag.dom_element.addEventListener('touchstart', e => this.onDragDown(e))
+        document.addEventListener('touchmove', e => this.onDragMove(e))
+        document.addEventListener('touchend', e => this.onDragUp(e))
         //
     }
     //events
@@ -57,7 +57,8 @@ export default class Cutter {
     }
 
     onDragMove(e) {
-        let point = e.touches ? e.touches[0] : e
+        console.log(e)
+        let point = e.touches[0] ? e.touches[0] : e
         if (this.dragging) {
             let _x = point.clientX - this.clip.left
             let _y = point.clientY - this.clip.top
