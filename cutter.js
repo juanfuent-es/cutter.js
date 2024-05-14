@@ -46,9 +46,21 @@ export default class Cutter extends HTMLGeometry {
     onDragMove(e) {
         let point = e.touches ? e.touches[0] : e
         if (this.drag) {
-            let _x = point.clientX - this.left - this.clip.x
-            let _y = point.clientY - this.top - this.clip.y
-            this.dragTo(_x, _y)
+            /*
+            * La operación para el cálculo de {x} requiere de la conversión a escala de {clip.x}
+            * El contenedor svg se adapta al contenedor, mientras svg maneja puntos en el espacio, el dom maneja pixeles
+            * La posición {x, y} de clip serán iguales a pixeles en el DOM siempre y cuando la escala sea 1
+            * Si el contenedor es menor al tamaño del svg, este cambiará su escala, el nuevo valor de {x, y} será igual a su valor multiplicado por la escala
+            */
+            let _x = (point.clientX - this.left - (this.clip.x * this.scale)) * PX_RATIO
+            let _y = (point.clientY - this.top - (this.clip.y * this.scale)) * PX_RATIO
+            let percent_x = Math.round((_x * 100) / this.clip.width)
+            percent_x = Math.max(0, percent_x)
+            percent_x = Math.min(100, percent_x)
+            let percent_y = Math.round((_y * 100) / this.clip.height)
+            percent_y = Math.max(0, percent_y)
+            percent_y = Math.min(100, percent_y)
+            this.dragTo(percent_x, percent_y)
         }
     }
 
@@ -67,8 +79,8 @@ export default class Cutter extends HTMLGeometry {
         let min_y = this.clip.y
         let max_w = (this.img.width - this.clip.width - this.clip.x)
         let max_h = (this.img.height - this.clip.height - this.clip.y)
-        const _x = Math.map(_to.x, 0, this.clip.width, min_x, -max_w)
-        const _y = Math.map(_to.y, 0, this.clip.height, min_y, -max_h)
+        const _x = (Math.map(_to.x, 0, 100, min_x, -max_w))
+        const _y = (Math.map(_to.y, 0, 100, min_y, -max_h))
         // 
         this.img.to(_x, _y)
         this.ghost.to(_x, _y)

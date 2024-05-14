@@ -21,8 +21,8 @@ body {
 }
 
 main {
-	width: 80vw;
-	height: 80vw;
+	width: 90vw;
+	height: 90vw;
 	max-width: 600px;
 	max-height: 600px;
 }
@@ -65,7 +65,9 @@ svg rect.sensible {
 a {
 	padding: 0 1em;
 	max-width: 120px;
-	width: 50%;
+	width: 10vw;
+	min-width: 80px;
+	max-width: 120px;
 	display: inline-block;
 	transition: opacity 250ms ease;
 	position: absolute;

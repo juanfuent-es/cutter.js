@@ -5,7 +5,6 @@ import {
 export default class HTMLGeometry {
     constructor(dom_element) {
         this.dom_element = dom_element
-        this.scale = 1
         this.pos = {
             x: 0,
             y: 0
@@ -49,13 +48,25 @@ export default class HTMLGeometry {
     }
     //size
     get width() {
-        return (this.getAttr("width") || this.rect.width)
+        if (this.scale == 1) {
+            return this.rect.width
+        } else {
+            return this.getAttr("width")
+        }
     }
     get height() {
-        return (this.getAttr("height") || this.rect.height)
+        if (this.scale == 1) {
+            return this.rect.height
+        } else {
+            return this.getAttr("height")
+        }
+    }
+
+    get scale() {
+        return (this.rect.width / this.getAttr("width"))
     }
 
     getAttr(_attr) {
-        return Number(this.dom_element.getAttribute(_attr))
+        return Number(this.dom_element.getAttribute(_attr).replace("px", ""))
     }
 }
