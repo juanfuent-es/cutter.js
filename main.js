@@ -21,10 +21,11 @@ class Cutter {
             y: 0
         }
         //
-        this.drag = false
+        this.dragging = false
         this.drag = new HTMLGeometry(this.container.querySelector(".drag"))
         this.clip = new HTMLGeometry(this.container.querySelector(".clip"))
-        this.img = new HTMLGeometry(this.container.querySelector("image"))
+        this.ghost = new HTMLGeometry(this.container.querySelector(".ghost"))
+        this.img = new HTMLGeometry(this.container.querySelector(".img"))
         //this.fitSetup()
         this.events()
     }
@@ -111,6 +112,8 @@ class Cutter {
             onUpdate: () => {
                 this.img.dom_element.setAttribute("x", this.offset.x)
                 this.img.dom_element.setAttribute("y", this.offset.y)
+                this.ghost.dom_element.setAttribute("x", this.offset.x)
+                this.ghost.dom_element.setAttribute("y", this.offset.y)
             }
         })
     }

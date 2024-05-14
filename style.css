@@ -38,6 +38,10 @@ svg {
 	transform: translate(250px, 250px);
 }
 
+.ghost {
+	opacity: 0.2;
+}
+
 a {
 	padding: 0 1em;
 	max-width: 120px;
