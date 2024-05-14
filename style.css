@@ -31,19 +31,28 @@ svg {
 .drag {
 	cursor: all-scroll;
 	z-index: 1;
-	fill: #000;
+	fill: #FFF;
+	opacity: 0.85;
 	position: absolute;
 	left: 50%;
 	top: 50%;
 	transform: translate(250px, 250px);
-}
-
-svg * {
+	transition: all 350ms ease-out;
 	transform-origin: center;
 }
-
 .ghost {
+	opacity: 0;
+	transition: opacity 450ms ease;
+}
+
+.dragging .ghost {
 	opacity: 0.35;
+}
+
+.dragging .drag {
+	transition-duration: 180ms;
+	transform: scale(.35) translate(250px, 250px);
+	opacity: 0;
 }
 
 a {

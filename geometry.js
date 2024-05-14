@@ -25,16 +25,6 @@ export default class HTMLGeometry {
         })
     }
 
-    scaleTo(_scale = 1) {
-        gsap.to(this.dom_element, {
-            transformOrigin: "center center",
-            overwrite: true,
-            duration: .15,
-            scaleX: _scale,
-            scaleY: _scale
-        })
-    }
-
     resize(_width = null, _height = null) {
         this.dom_element.setAttribute("width", (_width || this.width))
         this.dom_element.setAttribute("height", (_height || this.height))

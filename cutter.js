@@ -9,9 +9,6 @@ Math.map = (n, start, stop, start2, stop2) => {
 }
 
 import HTMLGeometry from "./geometry"
-import {
-    gsap
-} from "gsap"
 
 export default class Cutter {
     constructor(_svg) {
@@ -56,7 +53,7 @@ export default class Cutter {
     //events
     onDragDown(e) {
         this.dragging = true
-        this.drag.scaleTo(.65)
+        this.container.classList.add("dragging")
     }
 
     onDragMove(e) {
@@ -70,7 +67,7 @@ export default class Cutter {
 
     onDragUp(e) {
         this.dragging = false
-        this.drag.scaleTo(1)
+        this.container.classList.remove("dragging")
     }
 
     dragTo(_x, _y) {
@@ -81,23 +78,19 @@ export default class Cutter {
     cutter(_to) {
         let min_x = this.img.width - this.clip.width - this.clip.x
         let min_y = this.img.height - this.clip.height - this.clip.y
-        const _x = Math.map(_to.x, 0, 100, this.clip.x, -min_x)
-        const _y = Math.map(_to.y, 0, 100, this.clip.y, -min_y)
+        const _x = Math.map(_to.x, 0, this.clip.width, this.clip.x, -min_x)
+        const _y = Math.map(_to.y, 0, this.clip.height, this.clip.y, -min_y)
         // 
         this.img.to(_x, _y)
         this.ghost.to(_x, _y)
     }
 
     updateOffsets(_x = 0, _y = 0) {
-        let _width = this.clip.width
-        let x = (~~(_x * 100) / _width)
-        x = Math.max(x, 0)
-        x = Math.min(x, 100)
+        let x = Math.max(_x, 0)
+        x = Math.min(x, this.clip.width)
         //
-        let _height = this.clip.height
-        let y = (~~(_y * 100) / _height)
-        y = Math.max(y, 0)
-        y = Math.min(y, 100)
+        let y = Math.max(_y, 0)
+        y = Math.min(y, this.clip.height)
         return {
             x: ~~x,
             y: ~~y
