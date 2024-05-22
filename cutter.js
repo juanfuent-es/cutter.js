@@ -9,10 +9,12 @@ Math.map = (n, start, stop, start2, stop2) => {
 }
 
 import HTMLGeometry from "./geometry"
+import normalizeWheel from 'normalize-wheel'
 
 export default class Cutter extends HTMLGeometry {
     constructor(_svg) {
         super(_svg)
+        this.zoom = 1
         this.offset = {
             x: 0,
             y: 0
@@ -35,7 +37,22 @@ export default class Cutter extends HTMLGeometry {
         this.sensible.addEventListener('touchstart', e => this.onDragDown(e))
         document.addEventListener('touchmove', e => this.onDragMove(e))
         document.addEventListener('touchend', e => this.onDragUp(e))
-        //
+        //zoom wheel
+        document.addEventListener('wheel', e => this.onWheel(e))
+    }
+
+    onWheel(e) {
+        const delta = Math.sign(e.deltaY)
+        this.zoom += delta * .025
+
+        const w_scaled = this.img.width * this.zoom
+        const h_scaled = this.img.height * this.zoom
+        if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
+            this.img.scaleTo(this.zoom)
+            this.ghost.scaleTo(this.zoom)
+        }
+        // const normalized = normalizeWheel(e)
+        // console.log(normalized.pixelY)
     }
     //events
     onDragDown(e) {
@@ -47,11 +64,11 @@ export default class Cutter extends HTMLGeometry {
         let point = e.touches ? e.touches[0] : e
         if (this.drag) {
             /*
-            * La operación para el cálculo de {x} requiere de la conversión a escala de {clip.x}
-            * El contenedor svg se adapta al contenedor, mientras svg maneja puntos en el espacio, el dom maneja pixeles
-            * La posición {x, y} de clip serán iguales a pixeles en el DOM siempre y cuando la escala sea 1
-            * Si el contenedor es menor al tamaño del svg, este cambiará su escala, el nuevo valor de {x, y} será igual a su valor multiplicado por la escala
-            */
+             * La operación para el cálculo de {x} requiere de la conversión a escala de {clip.x}
+             * El contenedor svg se adapta al contenedor, mientras svg maneja puntos en el espacio, el dom maneja pixeles
+             * La posición {x, y} de clip serán iguales a pixeles en el DOM siempre y cuando la escala sea 1
+             * Si el contenedor es menor al tamaño del svg, este cambiará su escala, el nuevo valor de {x, y} será igual a su valor multiplicado por la escala
+             */
             let _x = (point.clientX - this.left - (this.clip.x * this.scale)) * PX_RATIO
             let _y = (point.clientY - this.top - (this.clip.y * this.scale)) * PX_RATIO
             let percent_x = Math.round((_x * 100) / this.clip.width)

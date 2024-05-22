@@ -5,6 +5,7 @@ import {
 export default class HTMLGeometry {
     constructor(dom_element) {
         this.dom_element = dom_element
+        this.zoom = 1
         this.pos = {
             x: 0,
             y: 0
@@ -21,6 +22,20 @@ export default class HTMLGeometry {
             onUpdate: () => {
                 this.dom_element.setAttribute("x", this.pos.x)
                 this.dom_element.setAttribute("y", this.pos.y)
+            }
+        })
+    }
+
+    scaleTo(_scale = 1) {
+        // const w_scaled = this.width * this.zoom
+        // const h_scaled = this.height * this.zoom
+        gsap.to(this, {
+            ease: "power0.linear",
+            overwrite: true,
+            duration: .1,
+            zoom: _scale,
+            onUpdate: () => {
+                this.dom_element.style.scale = this.zoom
             }
         })
     }

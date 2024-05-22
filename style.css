@@ -78,3 +78,7 @@ a {
 img {
 	max-width: 100%;
 }
+
+image {
+	transform-origin: center center;
+}
