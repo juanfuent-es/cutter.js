@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
   <title>Cutter.js</title>
   <meta name='title' content='Cutter.js'>
   <meta name='description' content='Cutting images with svg masks'>
@@ -25,11 +25,11 @@
       <clipPath id="clippath-idx">
         <rect class="clip" x="100" y="100" width="400" height="400" />
       </clipPath>
-      <image class="ghost" width="1920" height="1280" xlink:href="https://loremflickr.com/1920/1280" x="0" y="0"/>
+      <image class="ghost" width="0" height="0" xlink:href="" x="0" y="0"/>
       <g id="clip-group" clip-path="url(#clippath-idx)">
-        <image class="img" width="1920" height="1280" xlink:href="https://loremflickr.com/1920/1280" x="0" y="0" />
+        <image class="img" width="0" height="0" xlink:href="" x="0" y="0" />
       </g>
-      <g  class="drag">
+      <g class="drag">
         <circle cx="50" cy="50" r="50" fill="rgba(0,0,0,.35)" />
         <polygon
           points="48.7 18.9 48.7 45.6 51.8 45.6 51.8 18.9 60.2 27.2 62.4 25 50.3 12.9 38.2 25 40.3 27.2 48.7 18.9" />
@@ -45,6 +45,7 @@
       <rect x="100" y="100" width="400" height="400" class="sensible"/>
     </svg>
   </main>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha512-UXumZrZNiOwnTcZSHLOfcTs0aos2MzBWHXOHOuB0J/R44QB0dwY5JgfbvljXcklVf65Gc4El6RjZ+lnwd2az2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script type="module" src="/main.js"></script>
 </body>
 

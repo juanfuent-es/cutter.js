@@ -8,6 +8,10 @@ Math.map = (n, start, stop, start2, stop2) => {
     return newval
 }
 
+Math.clamp = (value, min, max) => {
+    return Math.min(Math.max(min, value), max)
+}
+
 import HTMLGeometry from "./geometry"
 import normalizeWheel from 'normalize-wheel'
 
@@ -21,14 +25,48 @@ export default class Cutter extends HTMLGeometry {
         }
         //
         this.drag = false
-        this.clip = new HTMLGeometry(this.dom_element.querySelector(".clip"))
-        this.ghost = new HTMLGeometry(this.dom_element.querySelector(".ghost"))
-        this.img = new HTMLGeometry(this.dom_element.querySelector(".img"))
+        //
+        this.clip_selector = this.dom_element.querySelector(".clip")
+        this.ghost_selector = this.dom_element.querySelector(".ghost")
+        this.img_element = this.dom_element.querySelector(".img")
+        //
+        this.random_img = new Image()
+        this.random_img.onload = () => this.onLoad()
+        this.random_img.src = "https://source.unsplash.com/random"
+        
+    }
+    
+    onLoad() {
+        this.setImg(this.ghost_selector)
+        this.setImg(this.img_element)
+        this.ghost = new HTMLGeometry(this.ghost_selector)
+        this.clip = new HTMLGeometry(this.clip_selector)
+        this.img = new HTMLGeometry(this.img_element)
         this.events()
+    }
+
+    setImg(_element) {
+        _element.setAttribute('xlink:href', this.random_img.src)
+        _element.setAttribute('width', this.random_img.naturalWidth)
+        _element.setAttribute('height', this.random_img.naturalHeight)
     }
 
     events() {
         this.sensible = this.dom_element.querySelector(".sensible")
+        this.hammertime = new Hammer(this.sensible)
+        this.hammertime.get('pinch').set({
+            enable: true
+        })
+        this.hammertime.on('pinch pinchmove', ev => {
+            const scale = ev.scale * this.zoom
+            const w_scaled = this.img.width * scale
+            const h_scaled = this.img.height * scale
+            if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
+                this.img.scaleTo(scale)
+                this.ghost.scaleTo(scale)
+            }
+        })
+
         //mouse
         this.sensible.addEventListener('mousedown', e => this.onDragDown(e))
         document.addEventListener('mousemove', e => this.onDragMove(e))
@@ -44,15 +82,14 @@ export default class Cutter extends HTMLGeometry {
     onWheel(e) {
         const delta = Math.sign(e.deltaY)
         this.zoom += delta * .025
-
         const w_scaled = this.img.width * this.zoom
         const h_scaled = this.img.height * this.zoom
+        const normalized = normalizeWheel(e)
+        console.log(normalized.pixelY)
         if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
             this.img.scaleTo(this.zoom)
             this.ghost.scaleTo(this.zoom)
         }
-        // const normalized = normalizeWheel(e)
-        // console.log(normalized.pixelY)
     }
     //events
     onDragDown(e) {
