@@ -19,7 +19,7 @@ export default class Cutter extends HTMLGeometry {
     constructor(_svg) {
         super(_svg)
         this.zoom = 1
-        this.pos = {
+        this.start_pos = {
             x: 0,
             y: 0
         }
@@ -47,7 +47,8 @@ export default class Cutter extends HTMLGeometry {
         this.random_img = new Image()
         this.random_img.onload = () => this.onLoad()
         // this.random_img.src = "https://source.unsplash.com/random"
-        this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
+        this.random_img.src = "https://bienaldeilustracion.com/finalista/andrea-devia-nuno/as-tight-as-you-can.xl.jpg"
+        // this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
 
     }
 
@@ -60,20 +61,12 @@ export default class Cutter extends HTMLGeometry {
         this.img = new HTMLGeometry(this.img_element)
         //
         this.cover = this.fit()
-        // this.min_scale = this.cover.scale
+        this.updateOffsets()
         this.ghost.resize(this.cover.width, this.cover.height)
-        this.ghost.to(this.cover.x, this.cover.y)
-        this.img.to(this.cover.x, this.cover.y)
         this.img.resize(this.cover.width, this.cover.height)
         //
-        this.offset_x = {
-            min: -this.cover.x,
-            max: this.cover.x
-        }
-        this.offset_y = {
-            min: -this.cover.y,
-            max: this.cover.y
-        }
+        this.ghost.to(this.cover.x, this.cover.y)
+        this.img.to(this.cover.x, this.cover.y)
         //
         this.timeout = null
         this.events()
@@ -86,11 +79,11 @@ export default class Cutter extends HTMLGeometry {
     }
 
     get width() {
-        return this.random_img.naturalWidth
+        return this.random_img.width
     }
 
     get height() {
-        return this.random_img.naturalHeight
+        return this.random_img.height
     }
 
     events() {
@@ -158,47 +151,47 @@ export default class Cutter extends HTMLGeometry {
     }
     //events
     onDragDown(e) {
+        e.preventDefault()
         let point = e.touches ? e.touches[0] : e
         this.drag = true
         this.dom_element.classList.add("dragging")
-        let _x = (point.clientX - this.clip.x)
-        let _y = (point.clientY - this.clip.y)
-        this.pos = {
-            x: _x,
-            y: _y
+        this.start_pos = {
+            x: point.clientX - this.clip.x,
+            y: point.clientY - this.clip.y
         }
     }
 
     onDragMove(e) {
+        e.preventDefault()
         let point = e.touches ? e.touches[0] : e
         if (this.drag) {
-            // let _x = (point.clientX - this.clip.x)
-            // let _y = (point.clientY - this.clip.y)
-            // this.offset.x = _x - this.pos.x
-            // this.offset.y = _y - this.pos.y
-            this.img.to(this.offset.x, this.offset.y)
-            this.ghost.to(this.offset.x, this.offset.y)
+            let _x = (point.clientX - this.start_pos.x) - this.img.x
+            let _y = (point.clientY - this.start_pos.y) - this.img.y
+            // _x = Math.clamp(_x, this.offset_x.min, this.offset_x.max)
+            // _y = Math.clamp(_y, this.offset_y.max, this.offset_y.max)
+            this.img.to(_x, _y)
+            this.ghost.to(_x, _y)
         }
-    }
-
-    updateOffsets() {
-        let _offset_x = Math.round(((this.cover.width * this.zoom) - this.clip.width) / 2)
-        let _offset_y = Math.round(((this.cover.height * this.zoom) - this.clip.height) / 2)
-        this.offset_x = {
-            min: -_offset_x,
-            max: _offset_x
-        }
-        console.log("this.offset_x", this.offset_x)
-        this.offset_y = {
-            min: -_offset_y,
-            max: _offset_y
-        }
-        console.log("this.offset_y", this.offset_y)
     }
 
     onDragUp(e) {
+        e.preventDefault()
         this.drag = false
         this.dom_element.classList.remove("dragging")
+    }
+
+
+    updateOffsets() {
+        this.offset_x = {
+            min: -this.cover.x + this.clip.x,
+            max: this.cover.x - this.clip.x
+        }
+        this.offset_y = {
+            min: -this.cover.y + this.clip.y,
+            max: this.cover.y - this.clip.y
+        }
+        console.log("this.offset_x", this.offset_x)
+        console.log("this.offset_y", this.offset_y)
     }
 
     // dragTo(_x, _y) {
