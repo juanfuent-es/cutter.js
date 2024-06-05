@@ -1,23 +1,24 @@
 :root {
-    --font-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-    --font-family: "basic-sans", var(--font-fallback);
-    --font-title: 'Bree', var(--font-fallback);
-    --light: #e5e5e5;
-    --coral: #f4a0a2;
-    --cloud: #dadbe7;
-    --salmon: #f9c7bb;
-    --petrol: #55859a;
+	--font-fallback: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+	--font-family: "basic-sans", var(--font-fallback);
+	--font-title: 'Bree', var(--font-fallback);
+	--light: #e5e5e5;
+	--coral: #f4a0a2;
+	--cloud: #dadbe7;
+	--salmon: #f9c7bb;
+	--petrol: #55859a;
 }
+
 body {
 	padding: 0;
 	margin: 0;
 	overflow: hidden;
 	background: var(--petrol);
 	height: 100vh;
-    width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	width: 100vw;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
 main {
@@ -44,14 +45,17 @@ svg {
 	transition: all 250ms ease-out;
 	transform-origin: center;
 }
+
 svg rect.sensible {
-	fill: rgba(255,0,0,.5);
+	fill: rgba(255, 0, 0, .5);
 	cursor: all-scroll;
 }
+
 .ghost {
 	opacity: 0;
 	transition: opacity 650ms ease;
 }
+
 .dragging .ghost {
 	transition-duration: 250ms;
 	opacity: 0.35;
@@ -82,4 +86,42 @@ img {
 
 image {
 	transform-origin: center center;
+}
+
+footer {
+	width: 100%;
+	text-align: center;
+}
+
+input[type='range'] {
+	-webkit-appearance: none;
+	appearance: none;
+	margin-top: 10px;
+	width: 100%;
+	height: 20px;
+	background: var(--cloud);
+	outline: none;
+	border-radius: 5px;
+	-webkit-transition: .2s;
+	transition: opacity .2s;
+}
+
+input[type='range']:hover {
+	opacity: 1;
+}
+
+input[type='range']::-webkit-slider-thumb {
+	-webkit-appearance: none;
+	appearance: none;
+	width: 25px;
+	height: 25px;
+	background: var(--coral);
+	cursor: pointer;
+}
+
+input[type='range']::-moz-range-thumb {
+	width: 25px;
+	height: 25px;
+	background: var(--coral);
+	cursor: pointer;
 }

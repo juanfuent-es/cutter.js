@@ -41,8 +41,15 @@ export default class HTMLGeometry {
     }
 
     resize(_width = null, _height = null) {
-        this.dom_element.setAttribute("width", (_width || this.width))
-        this.dom_element.setAttribute("height", (_height || this.height))
+        gsap.to(this.dom_element, {
+            ease: "power0.linear",
+            duration: .1,
+            overwrite: true,
+            width: (_width || this.width),
+            height: (_height || this.height)
+        })
+        // this.dom_element.setAttribute("width", (_width || this.width))
+        // this.dom_element.setAttribute("height", (_height || this.height))
     }
     get rect() {
         return this.dom_element.getBoundingClientRect()
