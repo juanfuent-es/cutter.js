@@ -46,7 +46,8 @@ export default class Cutter extends HTMLGeometry {
         //
         this.random_img = new Image()
         this.random_img.onload = () => this.onLoad()
-        this.random_img.src = "https://source.unsplash.com/random"
+        // this.random_img.src = "https://source.unsplash.com/random"
+        this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
 
     }
 
@@ -125,6 +126,8 @@ export default class Cutter extends HTMLGeometry {
         //
         const scaled_width = Math.round(this.width * scale)
         const scaled_height = Math.round(this.height * scale)
+
+        this.max_scale = this.width / scaled_width
         return {
             scale: scale,
             width: scaled_width,
