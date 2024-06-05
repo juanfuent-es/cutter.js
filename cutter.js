@@ -19,9 +19,21 @@ export default class Cutter extends HTMLGeometry {
     constructor(_svg) {
         super(_svg)
         this.zoom = 1
+        this.pos = {
+            x: 0,
+            y: 0
+        }
         this.offset = {
             x: 0,
             y: 0
+        }
+        this.offset_x = {
+            min: 0,
+            max: 0
+        }
+        this.offset_y = {
+            min: 0,
+            max: 0
         }
         //
         this.drag = false
@@ -33,9 +45,9 @@ export default class Cutter extends HTMLGeometry {
         this.random_img = new Image()
         this.random_img.onload = () => this.onLoad()
         this.random_img.src = "https://source.unsplash.com/random"
-        
+
     }
-    
+
     onLoad() {
         this.setImg(this.ghost_selector)
         this.setImg(this.img_element)
@@ -44,14 +56,20 @@ export default class Cutter extends HTMLGeometry {
         this.clip = new HTMLGeometry(this.clip_selector)
         this.img = new HTMLGeometry(this.img_element)
         //
-        const rect = this.cover()
-        console.log("rect", rect)
-        this.ghost.resize(rect.width, rect.height)
-        this.ghost.to(rect.x, rect.y)
-        // this.ghost.scaleTo(rect.scale)
-        this.img.to(rect.x, rect.y)
-        this.img.resize(rect.width, rect.height)
-        // this.img.scaleTo(rect.scale)
+        this.cover = this.fit()
+        this.ghost.resize(this.cover.width, this.cover.height)
+        this.ghost.to(this.cover.x, this.cover.y)
+        this.img.to(this.cover.x, this.cover.y)
+        this.img.resize(this.cover.width, this.cover.height)
+        //
+        this.offset_x = {
+            min: -this.cover.x,
+            max: this.cover.x
+        }
+        this.offset_y = {
+            min: -this.cover.y,
+            max: this.cover.y
+        }
         //
         this.events()
     }
@@ -65,7 +83,7 @@ export default class Cutter extends HTMLGeometry {
     get width() {
         return this.random_img.naturalWidth
     }
-    
+
     get height() {
         return this.random_img.naturalHeight
     }
@@ -77,7 +95,7 @@ export default class Cutter extends HTMLGeometry {
             enable: true
         })
         this.hammertime.on('pinch pinchmove', ev => {
-            
+
         })
 
         //mouse
@@ -92,7 +110,7 @@ export default class Cutter extends HTMLGeometry {
         document.addEventListener('wheel', e => this.onWheel(e))
     }
 
-    cover() {
+    fit() {
         const mask_width = this.clip.width
         const mask_height = this.clip.height
         const mask_aspect = mask_width / mask_height
@@ -123,32 +141,46 @@ export default class Cutter extends HTMLGeometry {
             this.img.scaleTo(this.zoom)
             this.ghost.scaleTo(this.zoom)
         }
+        this.updateOffsets()
     }
     //events
     onDragDown(e) {
+        let point = e.touches ? e.touches[0] : e
         this.drag = true
         this.dom_element.classList.add("dragging")
+        let _x = (point.clientX - this.clip.x)
+        let _y = (point.clientY - this.clip.y)
+        this.pos = {
+            x: _x,
+            y: _y
+        }
     }
 
     onDragMove(e) {
         let point = e.touches ? e.touches[0] : e
         if (this.drag) {
-            /*
-             * La operación para el cálculo de {x} requiere de la conversión a escala de {clip.x}
-             * El contenedor svg se adapta al contenedor, mientras svg maneja puntos en el espacio, el dom maneja pixeles
-             * La posición {x, y} de clip serán iguales a pixeles en el DOM siempre y cuando la escala sea 1
-             * Si el contenedor es menor al tamaño del svg, este cambiará su escala, el nuevo valor de {x, y} será igual a su valor multiplicado por la escala
-             */
-            let _x = (point.clientX - this.left - (this.clip.x * this.scale)) * PX_RATIO
-            let _y = (point.clientY - this.top - (this.clip.y * this.scale)) * PX_RATIO
-            let percent_x = Math.round((_x * 100) / this.clip.width)
-            percent_x = Math.max(0, percent_x)
-            percent_x = Math.min(100, percent_x)
-            let percent_y = Math.round((_y * 100) / this.clip.height)
-            percent_y = Math.max(0, percent_y)
-            percent_y = Math.min(100, percent_y)
-            this.dragTo(percent_x, percent_y)
+            // let _x = (point.clientX - this.clip.x)
+            // let _y = (point.clientY - this.clip.y)
+            // this.offset.x = _x - this.pos.x
+            // this.offset.y = _y - this.pos.y
+            this.img.to(this.offset.x, this.offset.y)
+            this.ghost.to(this.offset.x, this.offset.y)
         }
+    }
+
+    updateOffsets() {
+        let _offset_x = Math.round((this.cover.width * this.zoom - this.clip.width) / 2)
+        let _offset_y = Math.round((this.cover.height * this.zoom - this.clip.height) / 2)
+        this.offset_x = {
+            min: -_offset_x,
+            max: _offset_x
+        }
+        console.log("this.offset_x", this.offset_x)
+        this.offset_y = {
+            min: -_offset_y,
+            max: _offset_y
+        }
+        console.log("this.offset_y", this.offset_y)
     }
 
     onDragUp(e) {
@@ -156,33 +188,14 @@ export default class Cutter extends HTMLGeometry {
         this.dom_element.classList.remove("dragging")
     }
 
-    dragTo(_x, _y) {
-        let cropTo = this.updateOffsets(_x, _y)
-        this.cutter(cropTo)
-    }
+    // dragTo(_x, _y) {
+    //     let cropTo = this.updateOffsets(_x, _y)
+    //     this.cutter(cropTo)
+    // }
 
-    cutter(_to) {
-        let min_x = this.clip.x
-        let min_y = this.clip.y
-        let max_w = (this.img.width - this.clip.width - this.clip.x)
-        let max_h = (this.img.height - this.clip.height - this.clip.y)
-        const _x = (Math.map(_to.x, 0, 100, min_x, -max_w))
-        const _y = (Math.map(_to.y, 0, 100, min_y, -max_h))
-        console.log(_to)
-        // 
-        this.img.to(_x, _y)
-        this.ghost.to(_x, _y)
-    }
+    // cutter(_to) {
+    //     this.img.to(_x, _y)
+    //     this.ghost.to(_x, _y)
+    // }
 
-    updateOffsets(_x = 0, _y = 0) {
-        let x = Math.max(_x, 0)
-        x = Math.min(x, this.clip.width)
-        //
-        let y = Math.max(_y, 0)
-        y = Math.min(y, this.clip.height)
-        return {
-            x: ~~x,
-            y: ~~y
-        }
-    }
 }
