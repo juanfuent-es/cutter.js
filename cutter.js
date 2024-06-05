@@ -39,16 +39,35 @@ export default class Cutter extends HTMLGeometry {
     onLoad() {
         this.setImg(this.ghost_selector)
         this.setImg(this.img_element)
+        //
         this.ghost = new HTMLGeometry(this.ghost_selector)
         this.clip = new HTMLGeometry(this.clip_selector)
         this.img = new HTMLGeometry(this.img_element)
+        //
+        const rect = this.cover()
+        console.log("rect", rect)
+        this.ghost.resize(rect.width, rect.height)
+        this.ghost.to(rect.x, rect.y)
+        // this.ghost.scaleTo(rect.scale)
+        this.img.to(rect.x, rect.y)
+        this.img.resize(rect.width, rect.height)
+        // this.img.scaleTo(rect.scale)
+        //
         this.events()
     }
 
     setImg(_element) {
         _element.setAttribute('xlink:href', this.random_img.src)
-        _element.setAttribute('width', this.random_img.naturalWidth)
-        _element.setAttribute('height', this.random_img.naturalHeight)
+        _element.setAttribute('width', this.width)
+        _element.setAttribute('height', this.height)
+    }
+
+    get width() {
+        return this.random_img.naturalWidth
+    }
+    
+    get height() {
+        return this.random_img.naturalHeight
     }
 
     events() {
@@ -58,13 +77,7 @@ export default class Cutter extends HTMLGeometry {
             enable: true
         })
         this.hammertime.on('pinch pinchmove', ev => {
-            const scale = ev.scale * this.zoom
-            const w_scaled = this.img.width * scale
-            const h_scaled = this.img.height * scale
-            if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
-                this.img.scaleTo(scale)
-                this.ghost.scaleTo(scale)
-            }
+            
         })
 
         //mouse
@@ -79,13 +92,33 @@ export default class Cutter extends HTMLGeometry {
         document.addEventListener('wheel', e => this.onWheel(e))
     }
 
+    cover() {
+        const mask_width = this.clip.width
+        const mask_height = this.clip.height
+        const mask_aspect = mask_width / mask_height
+        const aspect = this.width / this.height
+        //
+        const width = mask_aspect > aspect ? mask_width : mask_height * aspect
+        let scale = width / this.width
+        //
+        const scaled_width = Math.round(this.width * scale)
+        const scaled_height = Math.round(this.height * scale)
+        return {
+            scale: scale,
+            width: scaled_width,
+            height: scaled_height,
+            x: this.clip.x + Math.ceil((mask_width - scaled_width) / 2),
+            y: this.clip.y + Math.ceil((mask_height - scaled_height) / 2)
+        }
+    }
+
     onWheel(e) {
         const delta = Math.sign(e.deltaY)
         this.zoom += delta * .025
-        const w_scaled = this.img.width * this.zoom
-        const h_scaled = this.img.height * this.zoom
-        const normalized = normalizeWheel(e)
-        console.log(normalized.pixelY)
+        this.zoom = Math.clamp(this.zoom, -10, 10)
+        const w_scaled = this.width * this.zoom
+        const h_scaled = this.height * this.zoom
+        // const normalized = normalizeWheel(e)
         if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
             this.img.scaleTo(this.zoom)
             this.ghost.scaleTo(this.zoom)
@@ -135,6 +168,7 @@ export default class Cutter extends HTMLGeometry {
         let max_h = (this.img.height - this.clip.height - this.clip.y)
         const _x = (Math.map(_to.x, 0, 100, min_x, -max_w))
         const _y = (Math.map(_to.y, 0, 100, min_y, -max_h))
+        console.log(_to)
         // 
         this.img.to(_x, _y)
         this.ghost.to(_x, _y)
