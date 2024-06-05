@@ -36,6 +36,8 @@ export default class Cutter extends HTMLGeometry {
             max: 0
         }
         //
+        this.min_scale = 1
+        this.max_scale = 2
         this.drag = false
         //
         this.clip_selector = this.dom_element.querySelector(".clip")
@@ -57,6 +59,7 @@ export default class Cutter extends HTMLGeometry {
         this.img = new HTMLGeometry(this.img_element)
         //
         this.cover = this.fit()
+        // this.min_scale = this.cover.scale
         this.ghost.resize(this.cover.width, this.cover.height)
         this.ghost.to(this.cover.x, this.cover.y)
         this.img.to(this.cover.x, this.cover.y)
@@ -71,6 +74,7 @@ export default class Cutter extends HTMLGeometry {
             max: this.cover.y
         }
         //
+        this.timeout = null
         this.events()
     }
 
@@ -132,16 +136,22 @@ export default class Cutter extends HTMLGeometry {
 
     onWheel(e) {
         const delta = Math.sign(e.deltaY)
-        this.zoom += delta * .025
-        this.zoom = Math.clamp(this.zoom, -10, 10)
-        const w_scaled = this.width * this.zoom
-        const h_scaled = this.height * this.zoom
+        this.zoom += delta * .05
+        this.zoom = Math.clamp(this.zoom, this.min_scale, this.max_scale)
+        // const w_scaled = this.width * this.zoom
+        // const h_scaled = this.height * this.zoom
         // const normalized = normalizeWheel(e)
-        if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
-            this.img.scaleTo(this.zoom)
-            this.ghost.scaleTo(this.zoom)
-        }
-        this.updateOffsets()
+        // if (w_scaled >= this.clip.width && h_scaled >= this.clip.height) {
+        //     this.img.scaleTo(this.zoom)
+        //     this.ghost.scaleTo(this.zoom)
+        // }
+        this.img.scaleTo(this.zoom)
+        this.ghost.scaleTo(this.zoom)
+        // this.updateOffsets()
+        this.dom_element.classList.add("dragging")
+        const debounce_time = 100
+        clearTimeout(this.timeout)
+        this.timeout = setTimeout(() => this.dom_element.classList.remove("dragging"), debounce_time)
     }
     //events
     onDragDown(e) {
@@ -169,8 +179,8 @@ export default class Cutter extends HTMLGeometry {
     }
 
     updateOffsets() {
-        let _offset_x = Math.round((this.cover.width * this.zoom - this.clip.width) / 2)
-        let _offset_y = Math.round((this.cover.height * this.zoom - this.clip.height) / 2)
+        let _offset_x = Math.round(((this.cover.width * this.zoom) - this.clip.width) / 2)
+        let _offset_y = Math.round(((this.cover.height * this.zoom) - this.clip.height) / 2)
         this.offset_x = {
             min: -_offset_x,
             max: _offset_x

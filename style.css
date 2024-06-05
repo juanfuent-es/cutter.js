@@ -41,23 +41,24 @@ svg {
 	left: 50%;
 	top: 50%;
 	transform: scale(.65) translate(250px, 250px);
-	transition: all 350ms ease-out;
+	transition: all 250ms ease-out;
 	transform-origin: center;
-}
-.ghost {
-	opacity: 0;
-	transition: opacity 450ms ease;
 }
 svg rect.sensible {
 	fill: rgba(255,255,255,.1);
 	cursor: all-scroll;
 }
+.ghost {
+	opacity: 0;
+	transition: opacity 650ms ease;
+}
 .dragging .ghost {
+	transition-duration: 250ms;
 	opacity: 0.35;
 }
 
 .dragging .drag {
-	transition-duration: 180ms;
+	transition-duration: 130ms;
 	transform: scale(.35) translate(250px, 250px);
 	opacity: 0;
 }
