@@ -15,7 +15,7 @@ export default class HTMLGeometry {
     to(_x = null, _y = null) {
         gsap.to(this.pos, {
             ease: "power0.linear",
-            duration: .05,
+            duration: .1,
             overwrite: true,
             x: (_x || this.pos.x),
             y: (_y || this.pos.y),
