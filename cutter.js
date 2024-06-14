@@ -11,7 +11,7 @@ Math.map = (n, start, stop, start2, stop2) => {
 Math.clamp = (value, min, max) => {
     return Math.min(Math.max(min, value), max)
 }
-const normalizeFloat = (_n, _precision = 1) => {
+const normalizeFloat = (_n, _precision = 3) => {
     return parseFloat(_n.toFixed(_precision))
 }
 
@@ -46,9 +46,9 @@ export default class Cutter extends HTMLGeometry {
         //
         this.random_img = new Image()
         this.random_img.onload = () => this.onLoad()
-        this.random_img.src = "https://source.unsplash.com/random"
+        // this.random_img.src = "https://source.unsplash.com/random"
         // this.random_img.src = "https://bienaldeilustracion.com/finalista/andrea-devia-nuno/as-tight-as-you-can.xl.jpg"
-        // this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
+        this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
     }
     
     events() {
@@ -79,6 +79,9 @@ export default class Cutter extends HTMLGeometry {
     onWheel(e) {
         this.zoom += (e.deltaY / 360)
         this.zoom = Math.clamp(this.zoom, this.min_scale, this.max_scale)
+        this.zoom = normalizeFloat(this.zoom)
+        console.log("max_scale", this.max_scale, this.zoom)
+        console.log("width", this.random_img.width, this.random_img.naturalWidth)
         //
         const _rect = this.updateDimensions(this.zoom)
         this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
@@ -93,6 +96,7 @@ export default class Cutter extends HTMLGeometry {
     }
     
     onLoad() {
+        console.log("load")
         this.setImg(this.ghost_selector)
         this.setImg(this.img_element)
         //
@@ -117,9 +121,9 @@ export default class Cutter extends HTMLGeometry {
         let scaled_height = Math.round(this.height * scale)
         //
         return {
-            scale: normalizeFloat(scale, 1),
-            width: normalizeFloat(scaled_width, 1),
-            height: normalizeFloat(scaled_height, 1),
+            scale: normalizeFloat(scale),
+            width: normalizeFloat(scaled_width),
+            height: normalizeFloat(scaled_height),
             x: Math.ceil((this.clip.width - scaled_width) / 2),
             y: Math.ceil((this.clip.height - scaled_height) / 2)
         }
@@ -161,10 +165,6 @@ export default class Cutter extends HTMLGeometry {
             let _x = (this.startX + point.clientX - this.offsetX)
             let _y = (this.startY + point.clientY - this.offsetY)
             this.dragTo(_x, _y)
-            _x = Math.clamp(_x, this.offset_x.min, this.offset_x.max)
-            _y = Math.clamp(_y, this.offset_y.min, this.offset_y.max)
-            this.img.to(_x, _y)
-            this.ghost.to(_x, _y)
         }
     }
 
@@ -181,10 +181,11 @@ export default class Cutter extends HTMLGeometry {
     }
 
     dragTo(_x = 0, _y = 0) {
-        this.ghost.to(_x, _y)
+        _x = Math.clamp(_x, this.offset_x.min, this.offset_x.max)
+        _y = Math.clamp(_y, this.offset_y.min, this.offset_y.max)
         this.img.to(_x, _y)
+        this.ghost.to(_x, _y)
     }
-
     
     setImg(_element) {
         _element.setAttribute('xlink:href', this.random_img.src)
@@ -215,6 +216,6 @@ export default class Cutter extends HTMLGeometry {
     }
 
     get max_scale() {
-        return this.width / (this.width * this.min_scale)
+        return this.random_img.width / this.random_img.naturalWidth
     }
 }
