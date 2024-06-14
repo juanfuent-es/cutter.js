@@ -44,13 +44,14 @@ export default class Cutter extends HTMLGeometry {
         this.ghost_selector = this.dom_element.querySelector(".ghost")
         this.img_element = this.dom_element.querySelector(".img")
         //
+        this.timeout = null
         this.random_img = new Image()
         this.random_img.onload = () => this.onLoad()
         // this.random_img.src = "https://source.unsplash.com/random"
         // this.random_img.src = "https://bienaldeilustracion.com/finalista/andrea-devia-nuno/as-tight-as-you-can.xl.jpg"
         this.random_img.src = "https://bienaldeilustracion.com/finalista/alex-lechuga/al-final-de-todo-como-piensas-reaccionar.xl.jpg"
     }
-    
+
     events() {
         this.input = document.querySelector("input")
         this.input.addEventListener("input", () => {
@@ -62,8 +63,7 @@ export default class Cutter extends HTMLGeometry {
         this.hammertime.get('pinch').set({
             enable: true
         })
-        this.hammertime.on('pinch pinchmove', ev => {
-        })
+        this.hammertime.on('pinch pinchmove', ev => {})
         //mouse
         this.sensible.addEventListener('mousedown', e => this.onDragDown(e))
         document.addEventListener('mousemove', e => this.onDragMove(e))
@@ -73,28 +73,50 @@ export default class Cutter extends HTMLGeometry {
         document.addEventListener('touchmove', e => this.onDragMove(e))
         document.addEventListener('touchend', e => this.onDragUp(e))
         //zoom wheel
-        document.addEventListener('wheel', e => this.onWheel(e))
+        document.addEventListener('wheel', e => this.onWheel(e), false)
     }
-    
+
     onWheel(e) {
         this.zoom += (e.deltaY / 360)
         this.zoom = Math.clamp(this.zoom, this.min_scale, this.max_scale)
         this.zoom = normalizeFloat(this.zoom)
-        console.log("max_scale", this.max_scale, this.zoom)
-        console.log("width", this.random_img.width, this.random_img.naturalWidth)
         //
         const _rect = this.updateDimensions(this.zoom)
         this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
         //
         this.dom_element.classList.add("dragging")
-        const debounce_time = 100
-        clearTimeout(this.timeout)
+        const debounce_time = 80
+        if (this.timeout) clearTimeout(this.timeout)
+        this.dragTo(this.img.x, this.img.y)
         this.timeout = setTimeout(() => {
-            this.dragTo(this.img.x, this.img.y)
             this.dom_element.classList.remove("dragging")
         }, debounce_time)
     }
-    
+    resize(_width, _height) {
+        this.ghost.resize(_width, _height)
+        this.img.resize(_width, _height)
+        this.updateOffsets()
+    }
+    updateOffsets() {
+        const scaled_width = Math.round(this.width * this.zoom)
+        const scaled_height = Math.round(this.height * this.zoom)
+        const _x = Math.ceil(scaled_width - this.clip.width)
+        const _y = Math.ceil(scaled_height - this.clip.height)
+
+        let start_x = -(_x - this.clip.x)
+        let start_y = -(_y - this.clip.y)
+        this.offset_x = {
+            min: start_x,
+            center: (start_x + (_x + start_x)) / 2,
+            max: _x + start_x
+        }
+        this.offset_y = {
+            min: start_y,
+            center: (start_y + (_y + start_y)) / 2,
+            max: _y + start_y
+        }
+    }
+
     onLoad() {
         console.log("load")
         this.setImg(this.ghost_selector)
@@ -104,7 +126,7 @@ export default class Cutter extends HTMLGeometry {
         this.clip = new HTMLGeometry(this.clip_selector)
         this.img = new HTMLGeometry(this.img_element)
         //
-        const _rect = this.updateDimensions(this.min_scale)
+        const _rect = this.updateDimensions(this.min_scale) // Se define minscale como escala inicial
         this.zoom = this.min_scale
         this.resize(_rect.width, _rect.height)
         this.dragTo(_rect.x + this.clip.x, _rect.y + this.clip.y)
@@ -112,7 +134,6 @@ export default class Cutter extends HTMLGeometry {
         this.timeout = null
         this.events()
     }
-
     updateDimensions(_scale) {
         // Si {scale} no está definido entendemos que la escala es la mínima {min_scale}
         let scale = _scale ? _scale : this.min_scale
@@ -128,24 +149,6 @@ export default class Cutter extends HTMLGeometry {
             y: Math.ceil((this.clip.height - scaled_height) / 2)
         }
     }
-
-    updateOffsets() {
-        const scaled_width = Math.round(this.width * this.zoom)
-        const scaled_height = Math.round(this.height * this.zoom)
-        const _x = Math.ceil(scaled_width - this.clip.width)
-        const _y = Math.ceil(scaled_height - this.clip.height)
-
-        let start_x = -(_x - this.clip.x)
-        let start_y = -(_y - this.clip.y)
-        this.offset_x = {
-            min: start_x,
-            max: _x + start_x
-        }
-        this.offset_y = {
-            min: start_y,
-            max: _y + start_y
-        }
-    }
     //events
     onDragDown(e) {
         e.preventDefault()
@@ -153,9 +156,9 @@ export default class Cutter extends HTMLGeometry {
         this.drag = true
         this.dom_element.classList.add("dragging")
         this.offsetX = point.clientX
-		this.offsetY = point.clientY
+        this.offsetY = point.clientY
         this.startX = this.img.x
-		this.startY = this.img.y
+        this.startY = this.img.y
     }
 
     onDragMove(e) {
@@ -171,13 +174,8 @@ export default class Cutter extends HTMLGeometry {
     onDragUp(e) {
         e.preventDefault()
         this.drag = false
+        this.dragTo(this.img.x, this.img.y)
         this.dom_element.classList.remove("dragging")
-    }
-
-    resize(_width, _height) {
-        this.ghost.resize(_width, _height)
-        this.img.resize(_width, _height)
-        this.updateOffsets()
     }
 
     dragTo(_x = 0, _y = 0) {
@@ -187,6 +185,13 @@ export default class Cutter extends HTMLGeometry {
         this.ghost.to(_x, _y)
     }
     
+    setTo(_x = 0, _y = 0) {
+        _x = Math.clamp(_x, this.offset_x.min, this.offset_x.max)
+        _y = Math.clamp(_y, this.offset_y.min, this.offset_y.max)
+        this.img.set(_x, _y)
+        this.ghost.set(_x, _y)
+    }
+
     setImg(_element) {
         _element.setAttribute('xlink:href', this.random_img.src)
         _element.setAttribute('width', this.width)
@@ -200,7 +205,7 @@ export default class Cutter extends HTMLGeometry {
     get height() {
         return this.random_img.naturalHeight
     }
-    
+
     get min_scale() {
         const mask_width = this.clip.width
         const mask_height = this.clip.height
@@ -209,10 +214,10 @@ export default class Cutter extends HTMLGeometry {
         //
         const width = mask_aspect > aspect ? mask_width : mask_height * aspect
         /* Este cálculo obtiene la escala para obtener las propiedades fit en la image
-        * Emulación de la propiedad fit {cover} css.
-        * @ref: https://www.w3schools.com/css/css3_object-fit.asp
-        */
-       return width / this.width
+         * Emulación de la propiedad fit {cover} css.
+         * @ref: https://www.w3schools.com/css/css3_object-fit.asp
+         */
+        return width / this.width
     }
 
     get max_scale() {

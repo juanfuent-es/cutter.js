@@ -12,10 +12,17 @@ export default class HTMLGeometry {
         }
     }
 
+    set(_x, _y) {
+        this.pos.x = _x
+        this.pos.y = _y
+    }
+
     to(_x = null, _y = null) {
+        if (_x == this.pos.x && this.pos.y == _y) return false
+        console.log("To", _x, _y)
         gsap.to(this.pos, {
             ease: "power0.linear",
-            duration: .15,
+            duration: .1,
             overwrite: true,
             x: (_x || this.pos.x),
             y: (_y || this.pos.y),
