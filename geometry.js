@@ -17,6 +17,7 @@ export default class HTMLGeometry {
     }
 
     to(_x = null, _y = null) {
+        if (isNaN(_x) || isNaN(_y)) return false
         this.pos.x = _x
         this.pos.y = _y
         this.dom_element.setAttribute("x", this.pos.x)

@@ -55,7 +55,7 @@ export default class Cutter extends HTMLGeometry {
 
     events() {
         this.input.addEventListener("input", () => {
-            this.zoom = this.input.value
+            this.zoom = Number(this.input.value)
             const _rect = this.updateDimensions(this.zoom)
             this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
             this.dragTo(this.img.x, this.img.y)
@@ -83,7 +83,7 @@ export default class Cutter extends HTMLGeometry {
         this.zoom += Math.sign(e.deltaY) * .01
         this.zoom = Math.clamp(this.zoom, this.min_scale, this.max_scale)
         this.zoom = normalizeFloat(this.zoom)
-        this.input.setAttribute("value", this.zoom)
+        this.input.value = this.zoom
         //
         const _rect = this.updateDimensions(this.zoom)
         this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
