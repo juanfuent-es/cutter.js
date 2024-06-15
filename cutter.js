@@ -40,6 +40,7 @@ export default class Cutter extends HTMLGeometry {
         //
         this.drag = false
         //
+        this.input = document.querySelector("input")
         this.clip_selector = this.dom_element.querySelector(".clip")
         this.ghost_selector = this.dom_element.querySelector(".ghost")
         this.img_element = this.dom_element.querySelector(".img")
@@ -53,37 +54,39 @@ export default class Cutter extends HTMLGeometry {
     }
 
     events() {
-        this.input = document.querySelector("input")
         this.input.addEventListener("input", () => {
-            console.log(this.input.value)
             this.zoom = this.input.value
+            const _rect = this.updateDimensions(this.zoom)
+            this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
+            this.dragTo(this.img.x, this.img.y)
         })
         this.sensible = this.dom_element.querySelector(".sensible")
-        this.hammertime = new Hammer(this.sensible)
-        this.hammertime.get('pinch').set({
-            enable: true
-        })
-        this.hammertime.on('pinch pinchmove', ev => {})
+        // this.hammertime = new Hammer(this.sensible)
+        // this.hammertime.get('pinch').set({
+        //     enable: true
+        // })
+        // this.hammertime.on('pinch pinchmove', ev => {})
         //mouse
         this.sensible.addEventListener('mousedown', e => this.onDragDown(e))
-        document.addEventListener('mousemove', e => this.onDragMove(e))
-        document.addEventListener('mouseup', e => this.onDragUp(e))
+        this.sensible.addEventListener('mousemove', e => this.onDragMove(e))
+        this.sensible.addEventListener('mouseup', e => this.onDragUp(e))
+        this.sensible.addEventListener('mouseleave', e => this.onDragUp(e))
         // touch
         this.sensible.addEventListener('touchstart', e => this.onDragDown(e))
-        document.addEventListener('touchmove', e => this.onDragMove(e))
-        document.addEventListener('touchend', e => this.onDragUp(e))
+        this.sensible.addEventListener('touchmove', e => this.onDragMove(e))
+        this.sensible.addEventListener('touchend', e => this.onDragUp(e))
         //zoom wheel
-        document.addEventListener('wheel', e => this.onWheel(e), false)
+        this.sensible.addEventListener('wheel', e => this.onWheel(e), false)
     }
     onWheel(e) {
         // this.zoom += parseFloat(normalizeFloat(e.deltaY / 360, 1))
         this.zoom += Math.sign(e.deltaY) * .01
         this.zoom = Math.clamp(this.zoom, this.min_scale, this.max_scale)
         this.zoom = normalizeFloat(this.zoom)
+        this.input.setAttribute("value", this.zoom)
         //
         const _rect = this.updateDimensions(this.zoom)
         this.resize(_rect.width, _rect.height) // rescale on dimension, not transformation
-        console.log("wheelzoom", this.zoom, _rect)
         //
         this.dom_element.classList.add("dragging")
         const debounce_time = 80
@@ -123,7 +126,6 @@ export default class Cutter extends HTMLGeometry {
     }
 
     onLoad() {
-        console.log("load")
         this.setImg(this.ghost_selector)
         this.setImg(this.img_element)
         //
@@ -132,7 +134,8 @@ export default class Cutter extends HTMLGeometry {
         this.img = new HTMLGeometry(this.img_element)
         //
         const _rect = this.updateDimensions(this.min_scale) // Se define minscale como escala inicial
-        this.zoom = this.min_scale
+        this.zoom = normalizeFloat(this.min_scale, 3)
+        this.input.setAttribute("min", this.zoom)
         this.resize(_rect.width, _rect.height)
         this.dragTo(_rect.x + this.clip.x, _rect.y + this.clip.y)
         //
