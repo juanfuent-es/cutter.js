@@ -17,44 +17,22 @@ export default class HTMLGeometry {
     }
 
     to(_x = null, _y = null) {
-        if (_x == this.pos.x && this.pos.y == _y) return false
-        gsap.to(this.pos, {
-            ease: "power0.linear",
-            duration: .1,
-            overwrite: true,
-            x: (_x || this.pos.x),
-            y: (_y || this.pos.y),
-            onUpdate: () => {
-                this.dom_element.setAttribute("x", this.pos.x)
-                this.dom_element.setAttribute("y", this.pos.y)
-            }
-        })
+        this.pos.x = _x
+        this.pos.y = _y
+        this.dom_element.setAttribute("x", this.pos.x)
+        this.dom_element.setAttribute("y", this.pos.y)
     }
 
     scaleTo(_scale = 1) {
-        if (_scale == this.zoom) return false
-        gsap.to(this, {
-            ease: "power0.linear",
-            overwrite: true,
-            duration: .1,
-            zoom: _scale,
-            onUpdate: () => {
-                this.dom_element.style.scale = this.zoom
-            }
-        })
+        this.zoom = _scale
+        this.dom_element.style.scale = this.zoom
     }
 
     resize(_width = null, _height = null) {
-        if (_width == this.width && this.height == _height) return false
-        gsap.to(this.dom_element, {
-            ease: "power0.linear",
-            duration: .1,
-            overwrite: true,
-            width: (_width || this.width),
-            height: (_height || this.height)
+        gsap.set(this.dom_element, {
+            width: _width,
+            height: _height
         })
-        // this.dom_element.setAttribute("width", (_width || this.width))
-        // this.dom_element.setAttribute("height", (_height || this.height))
     }
     get rect() {
         return this.dom_element.getBoundingClientRect()
