@@ -1,4 +1,3 @@
-const PX_RATIO = window.devicePixelRatio
 import {
     gsap
 } from "gsap"
@@ -19,7 +18,6 @@ export default class HTMLGeometry {
 
     to(_x = null, _y = null) {
         if (_x == this.pos.x && this.pos.y == _y) return false
-        console.log("To", _x, _y)
         gsap.to(this.pos, {
             ease: "power0.linear",
             duration: .1,
@@ -34,8 +32,7 @@ export default class HTMLGeometry {
     }
 
     scaleTo(_scale = 1) {
-        // const w_scaled = this.width * this.zoom
-        // const h_scaled = this.height * this.zoom
+        if (_scale == this.zoom) return false
         gsap.to(this, {
             ease: "power0.linear",
             overwrite: true,
@@ -48,6 +45,7 @@ export default class HTMLGeometry {
     }
 
     resize(_width = null, _height = null) {
+        if (_width == this.width && this.height == _height) return false
         gsap.to(this.dom_element, {
             ease: "power0.linear",
             duration: .1,
